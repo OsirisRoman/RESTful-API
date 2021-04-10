@@ -20,8 +20,12 @@ const createPost = (req, res, next) => {
   res.status(201).json({
     message: "Post Created Successfully!",
     post: {
-      id: new Date().toISOString(),
+      _id: new Date().toISOString(),
       ...req.body,
+      creator: {
+        name: "Osiris",
+      },
+      createdAt: new Date(),
     },
   });
 };
