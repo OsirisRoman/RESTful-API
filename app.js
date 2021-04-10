@@ -1,5 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
 
 const feedRoutes = require("./routes/feed");
 
@@ -19,4 +20,19 @@ app.use((req, res, next) => {
 
 app.use("/feed", feedRoutes);
 
-app.listen(8080);
+const MONGODB_URI = `mongodb+srv://${encodeURIComponent(
+  "Osiris"
+)}:${encodeURIComponent(
+  "1724771645"
+)}@cluster0.7jlvx.mongodb.net/messages?retryWrites=true&w=majority`;
+
+const PORT = 8080;
+
+mongoose
+  .connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Server listening on port ${PORT}`);
+    });
+  })
+  .catch(err => console.log(err));
