@@ -22,10 +22,11 @@ const getPosts = (req, res, next) => {
 const createPost = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(422).json({
-      message: "Validation failed, entered data is incorrect",
-      errors: errors.array(),
-    });
+    const error = new Error(
+      "Post creation failed, because of invalid entered data"
+    );
+    error.statusCode = 422;
+    throw error;
   }
   //Create post in db
   const post = new Post({
@@ -45,7 +46,10 @@ const createPost = (req, res, next) => {
       });
     })
     .catch(err => {
-      console.log(err);
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
     });
 };
 
