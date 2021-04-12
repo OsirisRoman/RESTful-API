@@ -18,4 +18,10 @@ router.post(
 
 router.get("/post/:postId", feedController.getPost);
 
+router.put(
+  "/post/:postId",
+  [titleValidator, contentValidator],
+  feedController.updatePost
+);
+
 module.exports = router;
