@@ -27,10 +27,17 @@ const createPost = (req, res, next) => {
     error.statusCode = 422;
     throw error;
   }
+  if (!req.file) {
+    const error = new Error("Attached file is not a valid image.");
+    error.statusCode = 422;
+    throw error;
+  }
   //Create post in db
   const post = new Post({
     ...req.body,
-    imageUrl: "images/pollo-asado.jpg",
+    //The path must replace "\" by "/" because
+    //of windows OS was the development environment
+    imageUrl: req.file.path.replace("\\", "/"),
     creator: {
       name: "Osiris",
     },
@@ -38,7 +45,6 @@ const createPost = (req, res, next) => {
   post
     .save()
     .then(result => {
-      console.log(result);
       res.status(201).json({
         message: "Post Created Successfully!",
         post: result,
