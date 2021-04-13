@@ -5,11 +5,22 @@ const Post = require("../models/post");
 const fileHelper = require("../utils/deleteFile");
 
 const getPosts = (req, res, next) => {
+  const currentPage = req.query.page || 1;
+  const perPage = 2;
+  let totalItems;
   Post.find()
+    .countDocuments()
+    .then(count => {
+      totalItems = count;
+      return Post.find()
+        .skip((currentPage - 1) * perPage)
+        .limit(perPage);
+    })
     .then(posts => {
       res.status(200).json({
         message: "Fetched posts successfully!",
         posts: posts,
+        totalItems,
       });
     })
     .catch(err => {
@@ -147,7 +158,6 @@ const deletePost = (req, res, next) => {
       return Post.findByIdAndRemove(postId);
     })
     .then(result => {
-      console.log(result);
       res.status(200).json({ message: "Post Deleted!" });
     })
     .catch(err => {
