@@ -1,6 +1,7 @@
 const { validationResult } = require("express-validator");
 
 const Post = require("../models/post");
+const User = require("../models/user");
 
 const fileHelper = require("../utils/deleteFile");
 
@@ -46,21 +47,29 @@ const createPost = (req, res, next) => {
     throw error;
   }
   //Create post in db
+  let creator;
   const post = new Post({
     ...req.body,
     //The path must replace "\" by "/" because
     //of windows OS was the development environment
     imageUrl: req.file.path.replace("\\", "/"),
-    creator: {
-      name: "Osiris",
-    },
+    creator: req.userId,
   });
   post
     .save()
     .then(result => {
+      return User.findById(req.userId);
+    })
+    .then(user => {
+      creator = user;
+      user.posts.push(post);
+      return user.save();
+    })
+    .then(result => {
       res.status(201).json({
         message: "Post Created Successfully!",
-        post: result,
+        post,
+        creator: { _id: creator._id, name: creator.name },
       });
     })
     .catch(err => {
