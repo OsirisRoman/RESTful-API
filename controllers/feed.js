@@ -131,6 +131,11 @@ const updatePost = (req, res, next) => {
         error.statusCode = 404;
         throw error;
       }
+      if (post.creator.toString() !== req.userId) {
+        const error = new Error("You are not authorized to edit this post");
+        error.statusCode = 403;
+        throw error;
+      }
       if (updatedPost.imageUrl !== post.imageUrl) {
         fileHelper.deleteFile(post.imageUrl);
       }
@@ -162,9 +167,21 @@ const deletePost = (req, res, next) => {
         error.statusCode = 404;
         throw error;
       }
+      if (post.creator.toString() !== req.userId) {
+        const error = new Error("You are not authorized to delete this post");
+        error.statusCode = 403;
+        throw error;
+      }
       //Check logged in user
       fileHelper.deleteFile(post.imageUrl);
       return Post.findByIdAndRemove(postId);
+    })
+    .then(result => {
+      return User.findById(req.userId);
+    })
+    .then(user => {
+      user.posts.pull(postId);
+      return user.save();
     })
     .then(result => {
       res.status(200).json({ message: "Post Deleted!" });
