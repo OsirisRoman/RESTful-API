@@ -3,6 +3,9 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const path = require("path");
 const multer = require("multer");
+const compression = require("compression");
+const morgan = require("morgan");
+const fs = require("fs");
 require("dotenv").config();
 
 const feedRoutes = require("./routes/feed");
@@ -38,6 +41,14 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
+const accessLogStream = fs.createWriteStream(
+  path.join(__dirname, "access.log"),
+  { flags: "a" }
+);
+
+app.use(compression());
+app.use(morgan("combined", { stream: accessLogStream }));
+
 app.use(bodyParser.json());
 app.use(
   multer({ storage: fileStorage, fileFilter: fileFilter }).single("image")
@@ -69,7 +80,7 @@ app.use((err, req, res, next) => {
 const MONGODB_URI =
   process.env.MONGODB_URI || "mongodb://localhost:27017/messages";
 
-const PORT = 8080;
+const PORT = process.env.PORT || 8080;
 
 mongoose
   .connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
