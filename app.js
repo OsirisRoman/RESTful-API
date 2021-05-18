@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const path = require("path");
 const multer = require("multer");
+require("dotenv").config();
 
 const feedRoutes = require("./routes/feed");
 const authRoutes = require("./routes/auth");
@@ -65,11 +66,8 @@ app.use((err, req, res, next) => {
   res.status(status).json({ message, data });
 });
 
-const MONGODB_URI = `mongodb+srv://${encodeURIComponent(
-  "Osiris"
-)}:${encodeURIComponent(
-  "1724771645"
-)}@cluster0.7jlvx.mongodb.net/messages?retryWrites=true&w=majority`;
+const MONGODB_URI =
+  process.env.MONGODB_URI || "mongodb://localhost:27017/messages";
 
 const PORT = 8080;
 
