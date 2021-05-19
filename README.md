@@ -52,3 +52,11 @@ $ npm start
 ## Author ✒️
 
 - **Osiris Román** - [OsirisRoman](https://github.com/OsirisRoman)
+
+## Result :tada:
+
+You can see the live result of this repository in the following link:
+
+- The backend is hosted on Heroku while the frontend is hosted on Netlify.
+
+* Nodejs-Reactjs-Blog-Posting-App: https://osirisroman-nodejs-reactjs-blog-posting.netlify.app/
